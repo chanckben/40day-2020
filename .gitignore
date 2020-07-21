@@ -1,0 +1,15 @@
+# Python pycache:
+__pycache__/
+
+# Virtual environment
+venv/
+
+# Dependencies
+lib/
+
+# Files
+config.cfg
+main.pyc
+
+# Google stuff
+.gcloudignore
