@@ -77,12 +77,12 @@ def set_webhook():
 
 @app.route('/deletewebhook', methods=['GET', 'POST'])
 def delete_webhook():
-    updater.stop()
     '''s = bot.deleteWebhook()
     if s:
         return "webhook deletion ok"
     else:
         return "webhook deletion failed"'''
+    updater.stop()
 
 @app.route('/')
 def index():
