@@ -14,7 +14,8 @@ def read_from_config_file(config):
     parser.read(config)
     return (parser.get('creds', 'token'), parser.get('creds', 'url'))
 
-TOKEN, URL = read_from_config_file('config.cfg')
+#TOKEN, URL = read_from_config_file('config.cfg')
+TOKEN = os.environ.get('TOKEN')
 PORT = int(os.environ.get('PORT', '8443'))
 bot = telegram.Bot(token=TOKEN)
 updater = Updater(TOKEN)
