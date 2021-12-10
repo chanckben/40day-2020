@@ -18,7 +18,8 @@ def get_devo(date=None):
     
     url = "https://lovesingapore.org.sg/40day/2020/"
     if date:
-        url += date_to_datetime(date).strftime("%B-%#d")
+        formatted_date = date_to_datetime(date).strftime("%B-%#d").replace("-0", "-")
+        url += formatted_date
     response = requests.get(url)
     html_soup = BeautifulSoup(response.text, 'html.parser')
     date = html_soup.find('div', class_ = 'et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light').div.extract().get_text()
@@ -28,11 +29,11 @@ def get_devo(date=None):
     devo = {"date": italicise(date), "word": format_section(word_section), "prayer": format_section(prayer_section)}
     return devo
 
-def get_devo_chunks():
+def get_devo_chunks(date=None):
     CHARACTER_LIMIT = 4096
     
     chunks = []
-    devo = get_devo()
+    devo = get_devo(date)
     first_chunk = devo["date"]
     
     if len(first_chunk + devo["word"]) + 2 < CHARACTER_LIMIT:
