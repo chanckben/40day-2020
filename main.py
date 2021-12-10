@@ -19,6 +19,8 @@ TOKEN = os.environ.get('TOKEN')
 PORT = int(os.environ.get('PORT', '5000'))
 bot = telegram.Bot(token=TOKEN)
 updater = Updater(TOKEN)
+updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN, webhook_url="https://fortyday.herokuapp.com/" + TOKEN)
+updater.idle()
 
 def reply_command(command):
     if "/getentry" in command:
@@ -66,13 +68,12 @@ def run():
 
 @app.route('/setwebhook', methods=['GET', 'POST'])
 def set_webhook():
-    updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN, webhook_url="https://fortyday.herokuapp.com/" + TOKEN)
-    updater.idle()
     '''s = bot.setWebhook(URL + TOKEN)
     if s:
         return "webhook setup ok"
     else:
         return "webhook setup failed"'''
+    pass
 
 @app.route('/deletewebhook', methods=['GET', 'POST'])
 def delete_webhook():
