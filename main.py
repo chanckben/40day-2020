@@ -1,8 +1,7 @@
 #! /usr/bin/env python3
 
-from flask import Flask, request
 from logic import get_devo_chunks
-from telegram.ext import Updater
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import configparser
 import telegram
 import os
@@ -14,13 +13,14 @@ def read_from_config_file(config):
     parser.read(config)
     return (parser.get('creds', 'token'), parser.get('creds', 'url'))
 
-#TOKEN, URL = read_from_config_file('config.cfg')
 TOKEN = os.environ.get('TOKEN')
 PORT = int(os.environ.get('PORT', '5000'))
-bot = telegram.Bot(token=TOKEN)
-updater = Updater(TOKEN)
-updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN, webhook_url="https://fortyday.herokuapp.com/" + TOKEN)
-updater.idle()
+
+def get_date_entry(update, context):
+    update.message.reply_text("Please enter the date of the desired prayer entry in the format <month> <day>, spelling the month in full, e.g. July 20. The acceptable date range is July 1 to August 9.")
+
+def greet(update, context):
+    update.message.reply_text("Hello!")
 
 def reply_command(command):
     if "/getentry" in command:
@@ -48,7 +48,7 @@ def make_reply(msg):
     else:
         return reply_message(msg)
 
-app = Flask(__name__)
+'''app = Flask(__name__)
 
 @app.route('/{}'.format(TOKEN), methods=['GET', 'POST'])
 def run():
@@ -66,28 +66,35 @@ def run():
 
     return 'OK'
 
-@app.route('/setwebhook', methods=['GET', 'POST'])
-def set_webhook():
-    '''s = bot.setWebhook(URL + TOKEN)
-    if s:
-        return "webhook setup ok"
-    else:
-        return "webhook setup failed"'''
-    pass
-
-@app.route('/deletewebhook', methods=['GET', 'POST'])
-def delete_webhook():
-    '''s = bot.deleteWebhook()
-    if s:
-        return "webhook deletion ok"
-    else:
-        return "webhook deletion failed"'''
-    updater.stop()
-
 @app.route('/')
 def index():
-    return '40day bot backend running.'
+    return '40day bot backend running.'''
+
+def main():
+    """Start the bot."""
+    # Create the Updater and pass it your bot's token.
+    # Make sure to set use_context=True to use the new context based callbacks
+    # Post version 12 this will no longer be necessary
+    updater = Updater(TOKEN)
+
+    # Get the dispatcher to register handlers
+    dp = updater.dispatcher
+
+    # on different commands - answer in Telegram
+    dp.add_handler(CommandHandler("getdateentry", get_date_entry))
+
+    # on noncommand i.e message - echo the message on Telegram
+    dp.add_handler(MessageHandler(Filters.text, greet))
+
+    # Start the Bot
+    updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN, webhook_url="https://fortyday.herokuapp.com/" + TOKEN)
+
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT. This should be used most of the time, since
+    # start_polling() is non-blocking and will stop the bot gracefully.
+    updater.idle()
 
 if __name__ == '__main__':
     #app.run(host='127.0.0.1', port=443, debug=True)
-    app.run(threaded=True)
+    #app.run(threaded=True)
+    main()
