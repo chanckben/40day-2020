@@ -51,6 +51,9 @@ def get_devo_chunks(date=None):
 
     return chunks
 
+def get_parse_mode():
+    return "Markdown"
+
 def break_into_chunks(string, length):
     return list(string[0+i:length+i] for i in range(0, len(string), length))
 
