@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
+MODE = "Markdown"
+
 def get_devo(date=None):
     
     def format_section(section):
@@ -11,7 +13,7 @@ def get_devo(date=None):
             part_text = part.extract().get_text()
             if header:
                 header = False
-                text += bold(part_text) + '\n\n'
+                text += format_text(MODE, "bold").format(part_text) + '\n\n'
             else:
                 text += part_text + '\n\n'
         return text[:-2]
@@ -28,7 +30,7 @@ def get_devo(date=None):
     word_section = html_soup.find('div', class_ = 'et_pb_with_border et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light').div
     prayer_section = html_soup.find('div', class_ = 'et_pb_with_border et_pb_module et_pb_text et_pb_text_8 et_pb_text_align_left et_pb_bg_layout_light').div
 
-    devo = {"date": italicise(date), "word": format_section(word_section), "prayer": format_section(prayer_section)}
+    devo = {"date": format_text(MODE, "italics").format(date), "word": format_section(word_section), "prayer": format_section(prayer_section)}
     return devo
 
 def get_devo_chunks(date=None):
@@ -52,16 +54,19 @@ def get_devo_chunks(date=None):
     return chunks
 
 def get_parse_mode():
-    return "Markdown"
+    return MODE
+
+def format_text(mode, format):
+    # Supported modes: Markdown
+    # Supported formats: Bold, Italics
+    formatting = {
+        "bold": "*{}*",
+        "italics": "_{}_"
+    }
+    return formatting[format]
 
 def break_into_chunks(string, length):
     return list(string[0+i:length+i] for i in range(0, len(string), length))
-
-def bold(string):
-    return '*' + string + '*'
-
-def italicise(string):
-    return '_' + string + '_'
 
 def date_to_datetime(str_date):
     str_date = str_date.strip()

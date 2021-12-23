@@ -9,7 +9,7 @@ pending_users = set()
 TOKEN = os.environ.get('TOKEN')
 PORT = int(os.environ.get('PORT', '8443'))
 
-# Commands
+# Functions for commands
 
 def get_entry(update, context):
     for chunk in get_devo_chunks():
@@ -22,7 +22,7 @@ def get_date_entry(update, context):
 def get_command_default(update, context):
     update.message.reply_text("Please enter a valid command")
 
-# Messages
+# Functions for messages
 
 def reply_date(update, context):
     if update.message.from_user.id in pending_users:
