@@ -25,7 +25,7 @@ def get_command_default(update, context):
 # Messages
 
 def reply_date(update, context):
-    update.message.reply(update.text)
+    update.message.reply_text(update.message.text)
 
 def greet(update, context):
     update.message.reply_text("Hello!")
