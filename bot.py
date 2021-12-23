@@ -4,7 +4,7 @@ from logic import get_devo_chunks
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import os
 
-switches = {"getdateentry": False}
+pending_users = set()
 
 TOKEN = os.environ.get('TOKEN')
 PORT = int(os.environ.get('PORT', '8443'))
@@ -16,7 +16,7 @@ def get_entry(update, context):
         update.message.reply_text(chunk)
 
 def get_date_entry(update, context):
-    #switches["getdateentry"] = True
+    pending_users.add(update.message.from_user.id)
     update.message.reply_text("Please enter the date of the desired prayer entry in the format <month> <day>, spelling the month in full, e.g. July 20. The acceptable date range is July 1 to August 9.")
 
 def get_command_default(update, context):
@@ -25,10 +25,16 @@ def get_command_default(update, context):
 # Messages
 
 def reply_date(update, context):
-    update.message.reply_text(update.message.text)
-
-def greet(update, context):
-    update.message.reply_text("Hello!")
+    if update.message.from_user.id in pending_users:
+        try:
+            devo = get_devo_chunks(date=update.message.text)
+            for chunk in devo:
+                update.message.reply_text(chunk)
+        except ValueError:
+            update.message.reply_text("Please enter a valid date. Enter the date in the format <month> <day>, spelling the month in full, e.g. July 20. The acceptable date range is July 1 to August 9.")
+        pending_users.remove(update.message.from_user.id)
+    else:
+        update.message.reply_text("Hello!")
 
 '''def reply_command(command):
     if "/getentry" in command:
