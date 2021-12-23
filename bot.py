@@ -7,7 +7,7 @@ import os
 switches = {"getdateentry": False}
 
 TOKEN = os.environ.get('TOKEN')
-PORT = int(os.environ.get('PORT', '5000'))
+PORT = int(os.environ.get('PORT', '8443'))
 
 def get_date_entry(update, context):
     update.message.reply_text("Please enter the date of the desired prayer entry in the format <month> <day>, spelling the month in full, e.g. July 20. The acceptable date range is July 1 to August 9.")
@@ -58,8 +58,7 @@ def main():
     dp.add_handler(MessageHandler(Filters.text, greet))
 
     # Start the Bot
-    updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN)
-    updater.bot.setWebhook('https://fortyday.herokuapp.com/' + TOKEN)
+    updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN, webhook_url='https://fortyday.herokuapp.com/' + TOKEN)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
