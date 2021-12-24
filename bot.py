@@ -3,11 +3,16 @@
 from logic import get_devo_chunks, get_parse_mode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import os
+import redis
 
-pending_users = set()
+# Set environment variables
 
 TOKEN = os.environ.get('TOKEN')
 PORT = int(os.environ.get('PORT', '8443'))
+
+# Connect to Redis
+
+r = redis.from_url(os.environ.get("REDIS_URL"))
 
 # Functions for commands
 
@@ -16,7 +21,7 @@ def get_entry(update, context):
         update.message.reply_text(chunk, parse_mode=get_parse_mode())
 
 def get_date_entry(update, context):
-    pending_users.add(update.message.from_user.id)
+    r.sadd("fortyDayUsers", update.message.from_user.id)
     update.message.reply_text("Please enter the date of the desired prayer entry in the format <month> <day>, spelling the month in full, e.g. July 20. The acceptable date range is July 1 to August 9.")
 
 def get_command_default(update, context):
@@ -25,14 +30,14 @@ def get_command_default(update, context):
 # Functions for messages
 
 def reply_date(update, context):
-    if update.message.from_user.id in pending_users:
+    if r.sismember("fortyDayUsers", update.message.from_user.id):
         try:
             devo = get_devo_chunks(date=update.message.text)
             for chunk in devo:
                 update.message.reply_text(chunk, parse_mode=get_parse_mode())
         except ValueError:
             update.message.reply_text("Please enter a valid date. Enter the date in the format <month> <day>, spelling the month in full, e.g. July 20. The acceptable date range is July 1 to August 9.")
-        pending_users.remove(update.message.from_user.id)
+        r.srem("fortyDayUsers", update.message.from_user.id)
     else:
         update.message.reply_text("Hello!")
 
