@@ -35,9 +35,9 @@ def reply_date(update, context):
             devo = get_devo_chunks(date=update.message.text)
             for chunk in devo:
                 update.message.reply_text(chunk, parse_mode=get_parse_mode())
+            r.srem("fortyDayUsers", update.message.from_user.id)
         except ValueError:
             update.message.reply_text("Please enter a valid date. Enter the date in the format <month> <day>, spelling the month in full, e.g. July 20. The acceptable date range is July 1 to August 9.")
-        r.srem("fortyDayUsers", update.message.from_user.id)
     else:
         update.message.reply_text("Hello!")
 
